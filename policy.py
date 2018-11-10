@@ -1,18 +1,9 @@
 import numpy as np
 import mdptoolbox as tool
 from grid import info
+import random
 
-grid, transitions, rewards, h, w = info()
-print(len(transitions))
-print(len(transitions[0]))
-print(len(rewards))
-
-print("h", h)
-print("w", w)
-# np.savetxt("grid_check", grid)
-# for a in range(4):
-#     np.savetxt("transitions_check"+str(a), transitions[a])
-# np.savetxt("rewards_check", rewards)
+transitions, rewards, h, w = info()
 
 g_y = h//4
 g_x = 3*w//4
@@ -33,8 +24,6 @@ for a in range(4):
     transitions_per_states = []
     for i in range(h*w):
         for k in range(h):
-            # print("i",i)
-            # print("k",k)
             transitions_per_states.append(transitions[a][i][k*w:(k+1)*w])
         transitions_per_states.append([9]*w)
     np.savetxt("transitions_check"+str(a), transitions_per_states)
@@ -43,14 +32,10 @@ rewards_matrix = []
 for k in range(h):
     rewards_matrix.append(rewards[k*w:(k+1)*w])
 
-# np.savetxt("grid_check", grid)
-# np.savetxt("transitions_check", transitions_per_states)
-# np.savetxt("rewards_check", rewards_matrix)
-
 transitions = np.array(transitions)
 rewards = np.array(rewards)
 
-pi = tool.mdp.PolicyIteration(transitions, rewards, 0.99, max_iter = 1000, eval_type='iterative')
+pi = tool.mdp.PolicyIteration(transitions, rewards, 0.9, max_iter = 1000, eval_type='iterative')
 pi.run()
 pol = pi.policy
 
@@ -61,8 +46,6 @@ for i in range(h):
             strin += " g "
         elif i == r_y and j == r_x:
             strin += " r "
-        elif grid[i][j] == 0:
-            strin += " x "
         else:
             p = pol[w*i+j]
             if p == 0:

@@ -4,12 +4,21 @@ import copy
 import mdptoolbox as tool
 import random
 
-h = 10
-w = 10
+h = 40
+w = 40
 
-green = [h//4, 3*w//4]
-red = [3*h//4, 3*w//4]
-
+random.seed(222)
+interval = 3
+combinations = [(a,b) for a in range(interval) for b in range(interval)]
+greens = []
+reds = []
+for p,q in combinations:
+    g_y = random.randint(h*p//interval, h*(p+1)//interval)
+    r_y = random.randint(h*p//interval, h*(p+1)//interval)
+    g_x = random.randint(w*q//interval, w*(q+1)//interval)
+    r_x = random.randint(w*q//interval, w*(q+1)//interval)
+    greens.append([g_y, g_x])
+    reds.append([r_y, r_x])
 
 transitions = []
 for _ in range(4):
@@ -105,25 +114,32 @@ for j in range(h):
             transitions[a][s][s] = actions[a][4]
         s += 1
 
-
-g = green[0]*w+green[1]
-r = red[0]*w+red[1]
-for a in range(4):
-    transitions[a][g][g-w] = 0
-    transitions[a][g][g+w] = 0
-    transitions[a][g][g-1] = 0
-    transitions[a][g][g+1] = 0
-    transitions[a][g][g] = 1
-    transitions[a][r][r-w] = 0
-    transitions[a][r][r+w] = 0
-    transitions[a][r][r-1] = 0
-    transitions[a][r][r+1] = 0
-    transitions[a][r][r] = 1
-
 rewards = [-0.04]*(h*w)
-rewards[g] = 1
-rewards[r] = -1
+for green,red in zip(greens, reds):
+    g = green[0]*w+green[1]
+    r = red[0]*w+red[1]
+    for a in range(4):
+        if g-w >= 0:
+            transitions[a][g][g-w] = 0
+        if g+w < h*w:
+            transitions[a][g][g+w] = 0
+        if g-1 >= 0:
+            transitions[a][g][g-1] = 0
+        if g+1 < h*w:
+            transitions[a][g][g+1] = 0
+        transitions[a][g][g] = 1
+        if r-w >= 0:
+            transitions[a][r][r-w] = 0
+        if r+w < h*w:
+            transitions[a][r][r+w] = 0
+        if r-1 >= 0:
+            transitions[a][r][r-1] = 0
+        if r+1 < h*w:
+            transitions[a][r][r+1] = 0
+        transitions[a][r][r] = 1
+    rewards[g] = 1
+    rewards[r] = -1
 
 def info():
-    return transitions, rewards, h, w
+    return transitions, rewards, h, w, greens, reds
 
