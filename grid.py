@@ -1,14 +1,13 @@
-
 import random
 import numpy as np
 import copy
 import mdptoolbox as tool
 
-h = 40
-w = 40
+h = 10
+w = 10
 
-green = [int((1/4)*h), int((3/4)*w)]
-red = [int((3/4)*h), int((3/4)*w)]
+green = [h//4, 3*w//4]
+red = [3*h//4, 3*w//4]
 
 block_pieces = []
 block_pieces.append([[0,0,0],
@@ -29,15 +28,15 @@ for i in range(h):
 # for row in grid:
 #     print(row)
 
-for i in range(80):
-    random.shuffle(block_pieces)
-    piece = block_pieces[0]
-    x = random.randint(0, w-1)
-    y = random.randint(0, h-1)
-    for j in range(len(piece)):
-        for k in range(len(piece[0])):
-            if y+j < h and x+k < w:
-                grid[y+j][x+k] = piece[j][k]
+# for i in range(80):
+#     random.shuffle(block_pieces)
+#     piece = block_pieces[0]
+#     x = random.randint(0, w-1)
+#     y = random.randint(0, h-1)
+#     for j in range(len(piece)):
+#         for k in range(len(piece[0])):
+#             if y+j < h and x+k < w:
+#                 grid[y+j][x+k] = piece[j][k]
     # print("...")
     # for row in grid:
     #     print(row)
@@ -47,7 +46,8 @@ grid[red[0]][red[1]] = 1
 
 print(np.sum(np.array(grid)))
 
-np.savetxt("big_grid", grid)
+#np.savetxt("big_grid", grid)
+#np.savetxt("small_grid", grid)
 
 # transitions = [[], [], [], []]
 # transitions = [copy.deepcopy(grid), copy.deepcopy(grid), copy.deepcopy(grid), copy.deepcopy(grid)]
@@ -158,16 +158,41 @@ for j in range(h):
 
         s += 1
 
+
+g = green[0]*w+green[1]
+r = red[0]*w+red[1]
+for a in range(4):
+    transitions[a][g][g-w] = 0
+    transitions[a][g][g+w] = 0
+    transitions[a][g][g-1] = 0
+    transitions[a][g][g+1] = 0
+    transitions[a][g][g] = 1
+    transitions[a][r][r-w] = 0
+    transitions[a][r][r+w] = 0
+    transitions[a][r][r-1] = 0
+    transitions[a][r][r+1] = 0
+    transitions[a][r][r] = 1
+
 rewards = [-0.04]*(h*w)
-rewards[green[0]*w+green[1]] = 1
-rewards[red[0]*w+red[1]] = -1
+rewards[g] = 1
+rewards[r] = -1
 
-transitions = np.array(transitions)
-rewards = np.array(rewards)
+#transitions = np.array(transitions)
+#rewards = np.array(rewards)
 
-print(transitions.shape)
-print(rewards.shape)
+def info():
+    return grid, transitions, rewards, h, w
 
-mdp_object = tool.mdp.MDP(transitions, rewards, 0.9, 0.001, 1000000)
+#print(transitions.shape)
+#print(rewards.shape)
+# np.savetxt("transitions", transitions)
+# np.savetxt("rewards", rewards)
 
-print("YO!")
+
+#mdp_object = tool.mdp.MDP(transitions, rewards, 0.9, 0.001, 1000000)
+
+# pi = tool.mdp.PolicyIteration(transitions, rewards, 0.9)
+# vi = tool.mdp.ValueIteration(transitions, rewards, 0.9)
+# ql = tool.mdp.QLearning(transitions, rewards, 0.9)
+# pi.run()
+# print(pi.policy)
