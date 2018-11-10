@@ -1,15 +1,12 @@
-import random
-import numpy as np
-import copy
-import mdptoolbox as tool
-import random
-
 h = 10
 w = 10
 
 green = [h//4, 3*w//4]
 red = [3*h//4, 3*w//4]
-
+greens = []
+reds = []
+greens.append(green)
+reds.append(red)
 
 transitions = []
 for _ in range(4):
@@ -125,5 +122,5 @@ rewards[g] = 1
 rewards[r] = -1
 
 def info():
-    return transitions, rewards, h, w
+    return transitions, rewards, h, w, greens, reds
 

@@ -1,8 +1,4 @@
 import random
-import numpy as np
-import copy
-import mdptoolbox as tool
-import random
 
 h = 40
 w = 40
@@ -140,6 +136,6 @@ for green,red in zip(greens, reds):
     rewards[g] = 1
     rewards[r] = -1
 
-def info():
+def big_info():
     return transitions, rewards, h, w, greens, reds
 
