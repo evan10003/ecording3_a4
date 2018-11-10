@@ -12,26 +12,6 @@ r_x = 3*w//4
 g = g_y*w + g_x
 r = r_y*w + r_x
 
-print("green")
-print(g_y, g_x)
-print(g)
-print("red")
-print(r_y, r_x)
-print(r)
-
-
-for a in range(4):
-    transitions_per_states = []
-    for i in range(h*w):
-        for k in range(h):
-            transitions_per_states.append(transitions[a][i][k*w:(k+1)*w])
-        transitions_per_states.append([9]*w)
-    np.savetxt("transitions_check"+str(a), transitions_per_states)
-
-rewards_matrix = []
-for k in range(h):
-    rewards_matrix.append(rewards[k*w:(k+1)*w])
-
 transitions = np.array(transitions)
 rewards = np.array(rewards)
 
