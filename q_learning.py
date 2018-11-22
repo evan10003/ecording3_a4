@@ -55,6 +55,36 @@ def print_q_policy(h, greens, reds, pol):
         print(strin)
 
 
+def q_learning_anneal_iter(T, R, Q, s, gamma, alpha, h, greens, reds, temp):
+    l = h**2
+    r = R[s]
+    s_y = s//h
+    s_x = s%h
+    if [s_y,s_x] in greens or [s_y,s_x] in reds:
+        for a in range(4):
+            Q[s,a] = r
+        while True:
+            s = np.random.randint(0,l)
+            s_y = s//h
+            s_x = s%h
+            if [s_y,s_x] not in greens and [s_y,s_x] not in reds:
+                break
+        return Q, s
+    a = np.random.randint(0,4)
+    prev_q = Q[s,a]
+    s_new = np.random.choice(range(len(T[a][s])), 1, p=T[a][s])
+    s_new = s_new[0]
+    x = r + gamma*np.amax(Q[s_new])
+    new_q = (1-alpha)*Q[s,a] + alpha*x
+    if new_q >= prev_q:
+        Q[s,a] = new_q
+        return Q, s_new
+    elif np.random.random() < np.e**((new_q-prev_q)/temp):
+        Q[s,a] = new_q
+        return Q, s_new
+    return Q, s
+
+
 def q_learning_iter(T, R, Q, s, gamma, alpha_t, h, l, greens, reds, prob=0.2):
     r = R[s]
     s_y = s//h
@@ -77,6 +107,7 @@ def q_learning_iter(T, R, Q, s, gamma, alpha_t, h, l, greens, reds, prob=0.2):
     x = r + gamma*np.amax(Q[s_new])
     Q[s,a] = (1-alpha_t)*Q[s,a] + alpha_t*x
     return Q, s_new
+
 
 transitions_all_grids, rewards_all_grids, greens_all_grids, reds_all_grids = all_info()
 
@@ -263,50 +294,65 @@ def run_q_learn(hs, transitions_all_grids, rewards_all_grids, greens_all_grids, 
 
 hs = [10, 20, 30, 40]
 
-all_Q, all_sum_q_values, ql_times, ql_iterations = run_q_learn(hs, transitions_all_grids, rewards_all_grids, greens_all_grids, reds_all_grids, prob=0.2)
-pi_policies = pi_policy_info(hs, transitions_all_grids, rewards_all_grids)
+mult_all_Q = []
+mult_all_sum_q_values = []
+mult_ql_times = []
+mult_ql_iterations = []
+mult_difs = []
+for _ in range(10):
+    all_Q, all_sum_q_values, ql_times, ql_iterations = run_q_learn(hs, transitions_all_grids, rewards_all_grids, greens_all_grids, reds_all_grids)
+    pi_policies = pi_policy_info(hs, transitions_all_grids, rewards_all_grids)
+
+    for i in range(4):
+        pi_policies[i] = np.array(pi_policies[i])
+        #all_Q[i] = np.argmax(all_Q[i], axis=1)
+
+    difs = []
+    for i in range(4):
+        difs.append(policy_dif(hs[i], greens_all_grids[i], reds_all_grids[i], pi_policies[i], np.argmax(all_Q[i], axis=1)))
+    mult_all_Q.append(all_Q)
+    mult_all_sum_q_values.append(all_sum_q_values)
+    mult_ql_times.append(ql_times)
+    mult_ql_iterations.append(ql_iterations)
+    mult_difs.append(difs)
+
+for m in range(10):
+    plt.plot([h**2 for h in hs], [float(h**2-dif)/(h**2) for h, dif in zip(hs, mult_difs[m])], linestyle='-', marker='o')
+plt.title("proportion of QL and PI/VI policy agreement")
+plt.xlabel("grid size")
+plt.ylabel("proportion of grid size")
+plt.legend()
+plt.savefig("ql_vs_pi_policies_initial")
+plt.clf()
+
+for m in range(10):
+    plt.plot([h**2 for h in hs], mult_ql_times[m], linestyle='-', marker='o')
+plt.title("Q learning times")
+plt.xlabel("grid size")
+plt.ylabel("time (sec)")
+plt.savefig("ql_times_initial")
+plt.clf()
+
+for m in range(10):
+    plt.plot([h**2 for h in hs], mult_ql_iterations[m], linestyle='-', marker='o')
+plt.title("Q learning iterations")
+plt.xlabel("grid size")
+plt.ylabel("iterations")
+plt.savefig("ql_iterations_initial")
+plt.clf()
 
 for i in range(4):
-    pi_policies[i] = np.array(pi_policies[i])
+    plt.plot(range(len(mult_all_sum_q_values[0][i])), mult_all_sum_q_values[0][i], linestyle='-', label='grid '+str(hs[i])+'x'+str(hs[i]))
+plt.title("Q Value Variation")
+plt.xlabel("iteration")
+plt.ylabel("difference in Q values")
+plt.legend()
+plt.savefig("sum_q_value_curves_initial")
+plt.clf()
 
-# difs = []
-# for i in range(4):
-#     difs.append(policy_dif(hs[i], greens_all_grids[i], reds_all_grids[i], pi_policies[i], np.argmax(all_Q[i], axis=1)))
-
-# plt.plot([h**2 for h in hs], [float(h**2-dif)/(h**2) for h, dif in zip(hs, difs)], linestyle='-', marker='o')
-# plt.title("proportion of QL and PI/VI policy agreement")
-# plt.xlabel("grid size")
-# plt.ylabel("proportion of grid size")
-# plt.legend()
-# plt.savefig("ql_vs_pi_policies_initial")
-# plt.clf()
-
-# for i in range(4):
-#     plt.plot(range(len(all_sum_q_values[i])), all_sum_q_values[i], linestyle='-', label='grid '+str(hs[i])+'x'+str(hs[i]))
-# plt.title("Q Value Variation")
-# plt.xlabel("iteration")
-# plt.ylabel("difference in Q values")
-# plt.legend()
-# plt.savefig("sum_q_value_curves_initial")
-# plt.clf()
-
-# for m in range(10):
-#     plt.plot([h**2 for h in hs], ql_iterations, linestyle='-', marker='o')
-# plt.title("Q learning iterations")
-# plt.xlabel("grid size")
-# plt.ylabel("iterations")
-# plt.savefig("ql_iterations_initial")
-# plt.clf()
-
-# for m in range(10):
-#     plt.plot([h**2 for h in hs], ql_times, linestyle='-', marker='o')
-# plt.title("Q learning times")
-# plt.xlabel("grid size")
-# plt.ylabel("time (sec)")
-# plt.savefig("ql_times_initial")
-# plt.clf()
+#print_policy_dif(hs[0], greens_all_grids[0], reds_all_grids[0], np.argmax(all_Q[0], axis=1), pi_policies[0])
+#print_policy_dif(hs[3], greens_all_grids[3], reds_all_grids[3], np.argmax(all_Q[3], axis=1), pi_policies[3])
 
 # print_q_policy(hs[0], greens_all_grids[0], reds_all_grids[0], all_Q[0])
 # print_q_policy(hs[3], greens_all_grids[3], reds_all_grids[3], all_Q[3])
-print_policy_dif(hs[0], greens_all_grids[0], reds_all_grids[0], np.argmax(all_Q[0], axis=1), pi_policies[0])
-print_policy_dif(hs[3], greens_all_grids[3], reds_all_grids[3], np.argmax(all_Q[3], axis=1), pi_policies[3])
+
