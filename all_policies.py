@@ -2,6 +2,8 @@ import numpy as np
 import mdptoolbox as tool
 from all_grids import all_info
 
+eps = 0.1
+
 def print_policy(h, w, greens, reds, pol):
     for i in range(h):
         strin = ""
@@ -33,7 +35,7 @@ def policy_dif(h, greens, reds, pol1, pol2):
                     sum += 1
     return sum
 
-hs = [10, 24, 33, 40]
+hs = [10, 20, 30, 40]
 transitions_all_grids, rewards_all_grids, greens_all_grids, reds_all_grids = all_info()
 
 def pi_policy_info(hs, transitions_all_grids, rewards_all_grids):
@@ -42,13 +44,25 @@ def pi_policy_info(hs, transitions_all_grids, rewards_all_grids):
         transitions = np.array(transitions_all_grids[m])
         rewards = np.array(rewards_all_grids[m])
 
-        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.0001)
+        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
         pi.run()
         pol = pi.policy
         pi_policies.append(pol)
 
     return pi_policies
 
+def vi_policy_info(hs, transitions_all_grids, rewards_all_grids):
+    vi_policies = []
+    for m in range(len(hs)):
+        transitions = np.array(transitions_all_grids[m])
+        rewards = np.array(rewards_all_grids[m])
+
+        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        vi.run()
+        pol = vi.policy
+        vi_policies.append(pol)
+
+    return vi_policies
 
 def pi_vi_times_info(hs, transitions_all_grids, rewards_all_grids):
     pi_iter_times = []
@@ -58,13 +72,13 @@ def pi_vi_times_info(hs, transitions_all_grids, rewards_all_grids):
         rewards = np.array(rewards_all_grids[m])
 
         print("policy iteration iterative")
-        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.001)
+        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
         pi.run()
         pi_iter_times.append(pi.time)
         print(pi.iter)
 
         print("value iteration")
-        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.001)
+        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
         vi.run()
         vi_times.append(vi.time)
         print(vi.iter)
@@ -72,52 +86,47 @@ def pi_vi_times_info(hs, transitions_all_grids, rewards_all_grids):
     return pi_iter_times, vi_times
 
 
-def pi_vi_iter_info(hs, transitions_all_grids, rewards_all_grids):
-    pi_iters = []
-    vi_iters = []
-    for m in range(len(hs)):
-        transitions = np.array(transitions_all_grids[m])
-        rewards = np.array(rewards_all_grids[m])
+# def pi_vi_iter_info(hs, transitions_all_grids, rewards_all_grids):
+#     pi_iters = []
+#     vi_iters = []
+#     for m in range(len(hs)):
+#         transitions = np.array(transitions_all_grids[m])
+#         rewards = np.array(rewards_all_grids[m])
 
-        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.001)
-        pi.run()
-        pi_iters.append(pi.iter)
+#         pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=eps, max_iter=1000000)
+#         pi.run()
+#         pi_iters.append(pi.iter)
 
-        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.001)
-        vi.run()
-        vi_iters.append(vi.iter)
+#         vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=eps, max_iter=1000000)
+#         vi.run()
+#         vi_iters.append(vi.iter)
 
-    return pi_iters, vi_iters
+#     return pi_iters, vi_iters
 
+# def value_function_info():
+#     pi_V = []
+#     vi_V = []
+#     for m in range(len(hs)):
+#         transitions = np.array(transitions_all_grids[m])
+#         rewards = np.array(rewards_all_grids[m])
+#         #greens = np.array(greens_all_grids[m])
+#         #reds = np.array(reds_all_grids[m])
 
-hs = [10, 24, 33, 40]
+#         pi = tool.mdp.PolicyIteration(transitions, rewards, 0.9, eval_type='iterative')
+#         pi.run()
+#         pol = pi.policy
+#         pi_V.append(pi.V)
 
-def value_function_info():
-    pi_V = []
-    vi_V = []
-    for m in range(len(hs)):
-        transitions = np.array(transitions_all_grids[m])
-        rewards = np.array(rewards_all_grids[m])
-        #greens = np.array(greens_all_grids[m])
-        #reds = np.array(reds_all_grids[m])
+#         vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=eps)
+#         vi.run()
+#         vi_pol = vi.policy
+#         vi_V.append(vi.V)
 
-        pi = tool.mdp.PolicyIteration(transitions, rewards, 0.9, eval_type='iterative')
-        pi.run()
-        pol = pi.policy
-        pi_V.append(pi.V)
-
-        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.001)
-        vi.run()
-        vi_pol = vi.policy
-        vi_V.append(vi.V)
-
-    return pi_V[0], vi_V[0]
-
-hs = [10]
+#     return pi_V[0], vi_V[0]
 
 if __name__ == "__main__":
-    hs = [10, 24, 33, 40]
-    #transitions_all_grids, rewards_all_grids, greens_all_grids, reds_all_grids = all_info()
+    hs = [10, 20, 30, 40]
+    transitions_all_grids, rewards_all_grids, greens_all_grids, reds_all_grids = all_info()
     pi_policies = []
     vi_policies = []
     pi_values = []
@@ -130,19 +139,18 @@ if __name__ == "__main__":
         greens = np.array(greens_all_grids[m])
         reds = np.array(reds_all_grids[m])
 
-        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.001)
-        #pi = tool.mdp.PolicyIteration(transitions, rewards, 0.9, eval_type='iterative')
-        # if m == 0 or m == 3:
-        #     pi.setVerbose()
+        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        if m in [0,3]:
+            pi.setVerbose()
         pi.run()
         pi_policies.append(pi.policy)
         pi_values.append(pi.V)
         pi_iterations.append(pi.iter)
         print("policy iteration iterations", pi.iter)
 
-        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.001)
-        # if m == 0 or m == 3:
-        #     vi.setVerbose()
+        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        if m in [0,3]:
+            vi.setVerbose()
         vi.run()
         vi_policies.append(vi.policy)
         vi_values.append(vi.V)
@@ -151,17 +159,20 @@ if __name__ == "__main__":
 
     print("policy iteration policy - small grid")
     print_policy(hs[0], hs[0], greens_all_grids[0], reds_all_grids[0], pi_policies[0])
-    print("value iteration policy - small grid")
-    print_policy(hs[0], hs[0], greens_all_grids[0], reds_all_grids[0], vi_policies[0])
-    print("policy iteration and value iteration grid difference - small grid")
-    print(policy_dif(hs[0], greens_all_grids[0], reds_all_grids[0], pi_policies[0], vi_policies[0]))
-    print("policy iteration and value iteration grid difference - big grid")
-    print(policy_dif(hs[3], greens_all_grids[3], reds_all_grids[3], pi_policies[3], vi_policies[3]))
+    print("policy iteration policy - big grid")
+    print_policy(hs[3], hs[3], greens_all_grids[3], reds_all_grids[3], pi_policies[3])
 
-    print("policy iteration and value iteration values sse - small grid")
-    print(np.sum(np.square(np.array(pi_values[0])-np.array(vi_values[0]))))
-    print("policy iteration and value iteration values sse - big grid")
-    print(np.sum(np.square(np.array(pi_values[3])-np.array(vi_values[3]))))
+    # print("value iteration policy - small grid")
+    # print_policy(hs[0], hs[0], greens_all_grids[0], reds_all_grids[0], vi_policies[0])
+    # print("policy iteration and value iteration grid difference - small grid")
+    # print(policy_dif(hs[0], greens_all_grids[0], reds_all_grids[0], pi_policies[0], vi_policies[0]))
+    # print("policy iteration and value iteration grid difference - big grid")
+    # print(policy_dif(hs[3], greens_all_grids[3], reds_all_grids[3], pi_policies[3], vi_policies[3]))
+
+    # print("policy iteration and value iteration values sse - small grid")
+    # print(np.sum(np.square(np.array(pi_values[0])-np.array(vi_values[0]))))
+    # print("policy iteration and value iteration values sse - big grid")
+    # print(np.sum(np.square(np.array(pi_values[3])-np.array(vi_values[3]))))
 
     print("number of iterations - policy iteration")
     print(pi_iterations)

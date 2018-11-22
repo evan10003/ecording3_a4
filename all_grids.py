@@ -1,12 +1,12 @@
 import random
 
-hs = [10, 24, 33, 40]
-seeds = [226, 227, 228, 229]
+hs = [10, 20, 30, 40]
+seeds = [236, 237, 238, 239]
 transitions_all_grids = []
 rewards_all_grids = []
 greens_all_grids = []
 reds_all_grids = []
-intervals = [1, 6, 11, 16]
+intervals = [1, 2, 3, 4]
 
 for m in range(len(hs)):
     seed = seeds[m]
@@ -18,6 +18,8 @@ for m in range(len(hs)):
     random.seed(seed)
     interval = intervals[m]
     combinations = [(a,b) for a in range(interval) for b in range(interval)]
+
+    #print(combinations)
 
     greens = []
     reds = []
