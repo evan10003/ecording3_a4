@@ -8,6 +8,8 @@ hs = [10, 20, 30, 40]
 grid_sizes = [h**2 for h in hs]
 transitions_all_grids, rewards_all_grids, greens_all_grids, reds_all_grids = all_info()
 
+# Policy iteration times
+
 for _ in range(10):
     pi_iter_times, vi_times = pi_vi_times_info(hs, transitions_all_grids, rewards_all_grids)
     #print(pi_iter_times)
@@ -18,6 +20,8 @@ plt.title("policy iteration times - multiple runs")
 plt.legend()
 plt.savefig("pi times")
 plt.clf()
+
+# Value iteration times
 
 for _ in range(10):
     pi_iter_times, vi_times = pi_vi_times_info(hs, transitions_all_grids, rewards_all_grids)
@@ -33,6 +37,9 @@ plt.clf()
 # for m in range(4):
 #     print_policy(hs[m], hs[m], greens_all_grids[m], reds_all_grids[m], pi_policies[m])
 #     print_policy(hs[m], hs[m], greens_all_grids[m], reds_all_grids[m], vi_policies[m])
+
+
+# Policy and value function variation per iteration
 
 df_vi_small = pd.read_table("vi_iters_small_grid.txt", header=None)
 df_vi_big = pd.read_table("vi_iters_big_grid.txt", header=None)

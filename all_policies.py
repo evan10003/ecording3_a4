@@ -2,8 +2,6 @@ import numpy as np
 import mdptoolbox as tool
 from all_grids import all_info
 
-eps = 0.1
-
 def print_policy(h, w, greens, reds, pol):
     for i in range(h):
         strin = ""
@@ -44,7 +42,7 @@ def pi_policy_info(hs, transitions_all_grids, rewards_all_grids):
         transitions = np.array(transitions_all_grids[m])
         rewards = np.array(rewards_all_grids[m])
 
-        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1)
         pi.run()
         pol = pi.policy
         pi_policies.append(pol)
@@ -57,7 +55,7 @@ def vi_policy_info(hs, transitions_all_grids, rewards_all_grids):
         transitions = np.array(transitions_all_grids[m])
         rewards = np.array(rewards_all_grids[m])
 
-        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1)
         vi.run()
         pol = vi.policy
         vi_policies.append(pol)
@@ -71,17 +69,18 @@ def pi_vi_times_info(hs, transitions_all_grids, rewards_all_grids):
         transitions = np.array(transitions_all_grids[m])
         rewards = np.array(rewards_all_grids[m])
 
-        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1)
         pi.run()
         pi_iter_times.append(pi.time)
 
-        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1)
         vi.run()
         vi_times.append(vi.time)
 
     return pi_iter_times, vi_times
 
 if __name__ == "__main__":
+    # Print policy iteration and value iteration information
     hs = [10, 20, 30, 40]
     transitions_all_grids, rewards_all_grids, greens_all_grids, reds_all_grids = all_info()
     pi_policies = []
@@ -96,7 +95,7 @@ if __name__ == "__main__":
         greens = np.array(greens_all_grids[m])
         reds = np.array(reds_all_grids[m])
 
-        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        pi = tool.mdp.PolicyIterationModified(transitions, rewards, 0.9, epsilon=0.1)
         if m in [0,3]:
             pi.setVerbose()
         pi.run()
@@ -104,7 +103,7 @@ if __name__ == "__main__":
         pi_values.append(pi.V)
         pi_iterations.append(pi.iter)
 
-        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1, max_iter=1000)
+        vi = tool.mdp.ValueIteration(transitions, rewards, 0.9, epsilon=0.1)
         if m in [0,3]:
             vi.setVerbose()
         vi.run()

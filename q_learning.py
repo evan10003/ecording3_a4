@@ -473,6 +473,7 @@ plt.legend()
 plt.savefig("sum_q_value_curves_initial")
 plt.clf()
 
+# Print QL and PI/VI policy/policy differences for small and large grids
 print_policy_dif(hs[0], greens_all_grids[0], reds_all_grids[0], np.argmax(all_Q[0], axis=1), pi_policies[0])
 print_policy_dif(hs[3], greens_all_grids[3], reds_all_grids[3], np.argmax(all_Q[3], axis=1), pi_policies[3])
 
