@@ -28,11 +28,11 @@ plt.title("value iteration times - multiple runs")
 plt.savefig("vi times")
 plt.clf()
 
-pi_policies = pi_policy_info(hs, transitions_all_grids, rewards_all_grids)
-vi_policies = vi_policy_info(hs, transitions_all_grids, rewards_all_grids)
-for m in range(4):
-    print_policy(hs[m], hs[m], greens_all_grids[m], reds_all_grids[m], pi_policies[m])
-    print_policy(hs[m], hs[m], greens_all_grids[m], reds_all_grids[m], vi_policies[m])
+# pi_policies = pi_policy_info(hs, transitions_all_grids, rewards_all_grids)
+# vi_policies = vi_policy_info(hs, transitions_all_grids, rewards_all_grids)
+# for m in range(4):
+#     print_policy(hs[m], hs[m], greens_all_grids[m], reds_all_grids[m], pi_policies[m])
+#     print_policy(hs[m], hs[m], greens_all_grids[m], reds_all_grids[m], vi_policies[m])
 
 df_vi_small = pd.read_table("vi_iters_small_grid.txt", header=None)
 df_vi_big = pd.read_table("vi_iters_big_grid.txt", header=None)
@@ -43,11 +43,6 @@ vi_small = df_vi_small.values
 vi_big = df_vi_big.values
 pi_small = df_pi_small.values
 pi_big = df_pi_big.values
-
-# print(vi_small)
-# print(vi_big)
-# print(pi_small)
-# print(pi_big)
 
 plt.plot([x+1 for x in range(len(vi_small))], vi_small, label='small grid')
 plt.plot([x+1 for x in range(len(vi_big))], vi_big, label='big grid')
