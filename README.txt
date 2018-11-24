@@ -1,7 +1,5 @@
 MDPs
 
-code:
-
 python3
 
 graphs.py creates and saves plots for policy and value iteration. For a few of
