@@ -355,13 +355,6 @@ for p in range(0, 11):
     plt.savefig("ql_times_pequals0point"+str(int(prob*10)))
     plt.clf()
 
-    for m in range(n):
-        plt.plot([h**2 for h in hs], mult_ql_iterations[m], linestyle='-', marker='o')
-    plt.title("Q learning iterations - random prob "+str(prob))
-    plt.xlabel("grid size")
-    plt.ylabel("time (sec)")
-    plt.savefig("ql_iter_pequals0point"+str(int(prob*10)))
-    plt.clf()
 
 # Varying Q Value initialization constant
 
@@ -407,14 +400,6 @@ for q in range(-4,4):
     plt.savefig("ql_times_q0_"+str(q))
     plt.clf()
 
-    for m in range(n):
-        plt.plot([h**2 for h in hs], mult_ql_iterations[m], linestyle='-', marker='o')
-    plt.title("Q learning iterations - q0 addition "+str(q))
-    plt.xlabel("grid size")
-    plt.ylabel("time (sec)")
-    plt.savefig("ql_iter_q0_"+str(q))
-    plt.clf()
-
 # vanilla Q Learning
 
 mult_all_Q = []
@@ -454,14 +439,6 @@ plt.title("Q learning times")
 plt.xlabel("grid size")
 plt.ylabel("time (sec)")
 plt.savefig("ql_times_initial")
-plt.clf()
-
-for m in range(n):
-    plt.plot([h**2 for h in hs], mult_ql_iterations[m], linestyle='-', marker='o')
-plt.title("Q learning iterations")
-plt.xlabel("grid size")
-plt.ylabel("iterations")
-plt.savefig("ql_iterations_initial")
 plt.clf()
 
 for i in range(4):
